@@ -14,10 +14,10 @@ type Size struct {
 
 type Flavor struct {
 	Flavor_ID      int    `json:"flavor_id"`
-	Flavor_name_th string `json:"f_name_th"`
-	Flavor_name_en string `json:"f_name_en"`
-	Flavor_price   int    `json:"f_price"`
-	Flavor_Stock   int    `json:"f_stock"`
+	Flavor_name_th string `json:"flavor_name_th"`
+	Flavor_name_en string `json:"flavor_name_en"`
+	Flavor_price   int    `json:"flavor_price"`
+	Flavor_Stock   int    `json:"flavor_stock"`
 }
 
 type Topping struct {
@@ -30,19 +30,19 @@ type Topping struct {
 
 type Sauce struct {
 	Sauce_ID      int    `json:"sauce_id"`
-	Sauce_name_th string `json:"s_name_th"`
-	Sauce_name_en string `json:"s_name_en"`
-	Sauce_price   int    `json:"s_price"`
-	Sauce_Stock   int    `json:"s_stock"`
+	Sauce_name_th string `json:"sauce_name_th"`
+	Sauce_name_en string `json:"sauce_name_en"`
+	Sauce_price   int    `json:"sauce_price"`
+	Sauce_Stock   int    `json:"sauce_stock"`
 }
 
 type Order_detail struct {
 	Order_id   int `json:"detail_id"`
-	Size_ID    int `json:"size_id"`
-	Flavor_ID  int `json:"flavor_id"`
-	Topping_ID int `json:"topping_id"`
-	Sauce_ID   int `json:"sauce_id"`
-	Price      int `json:"price"`
+	Size_name_en string `json:"size_name_en"`
+	Flavor_name_en string `json:"flavor_name_en"`
+	Topping_name_en string `json:"tp_name_en"`
+	Sauce_name_en string `json:"sauce_name_en"`
+	Sum_Price      int `json:"price"`
 }
 
 type Payment struct {

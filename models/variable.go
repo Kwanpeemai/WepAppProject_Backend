@@ -4,16 +4,12 @@ import (
 	"time"
 )
 
-type Order struct {
-	Order_ID int `json:"id"`
-}
-
 type Size struct {
 	Size_ID      int    `json:"size_id"`
-	Size_name_th string `json:"sz_name_th"`
-	Size_name_en string `json:"sz_name_en"`
-	Size_price   int    `json:"sz_price"`
-	Size_Stock   int    `json:"sz_stock"`
+	Size_name_th string `json:"size_name_th"`
+	Size_name_en string `json:"size_name_en"`
+	Size_price   int    `json:"size_price"`
+	Size_Stock   int    `json:"size_stock"`
 }
 
 type Flavor struct {
@@ -41,7 +37,7 @@ type Sauce struct {
 }
 
 type Order_detail struct {
-	Detail_id  int `json:"detail_id"`
+	Order_id   int `json:"detail_id"`
 	Size_ID    int `json:"size_id"`
 	Flavor_ID  int `json:"flavor_id"`
 	Topping_ID int `json:"topping_id"`

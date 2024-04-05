@@ -1,58 +1,58 @@
 package controller
 
 import (
-	"encoding/json"
+	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"web-project/models"
+
+	"github.com/gin-gonic/gin"
 )
 
 var sizes []models.Size
 
-func CreateSize(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+func CreateSize(c *gin.Context, db *sql.DB) {
 	var size models.Size
-	_ = json.NewDecoder(r.Body).Decode(&size)
-	sizes = append(sizes, size)
-	json.NewEncoder(w).Encode(size)
+	fmt.Println("🦏🦏🦏🦏🦏🦏🦏🦏🦏🦏")
+	if err := c.ShouldBindJSON(&size); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println("🦏🦏🦏🦏🦏🦏🦏🦏🦏🦏")
+
+	// Insert into database
+	insertQuery := "INSERT INTO sizes (Size_name_th, Size_name_en, Size_price, Size_Stock) VALUES (?, ?, ?, ?)"
+	fmt.Println("🦏🦏🦏🦏🦏🦏🦏🦏🦏🦏")
+	_, err := db.Exec(insertQuery, size.Size_name_th, size.Size_name_en, size.Size_price, size.Size_Stock)
+	if err != nil {
+		log.Printf("Error executing query: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting data"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Size created successfully"})
 }
 
+func GetSizes(c *gin.Context, db *sql.DB) {
+	// Query the database
+	rows, err := db.Query("SELECT * FROM sizes")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error querying data"})
+		return
+	}
+	defer rows.Close()
 
-func GetSizes(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(sizes)
-}
-
-func GetSize(w http.ResponseWriter, r *http.Request) {
-	sizeID := r.URL.Query().Get("size_id")
-	for _, size := range sizes {
-		if fmt.Sprint(size.Size_ID) == sizeID {
-			json.NewEncoder(w).Encode(size)
+	var sizes []models.Size
+	for rows.Next() {
+		var size models.Size
+		err := rows.Scan(&size.Size_ID, &size.Size_name_th, &size.Size_name_en, &size.Size_price, &size.Size_Stock)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning data"})
 			return
 		}
+		sizes = append(sizes, size)
 	}
-	json.NewEncoder(w).Encode(&models.Size{})
-}
 
-func UpdateSize(w http.ResponseWriter, r *http.Request) {
-	var updatedSize models.Size
-	json.NewDecoder(r.Body).Decode(&updatedSize)
-	for i, size := range sizes {
-		if size.Size_ID == updatedSize.Size_ID {
-			sizes[i] = updatedSize
-			json.NewEncoder(w).Encode(updatedSize)
-			return
-		}
-	}
-	json.NewEncoder(w).Encode(&models.Size{})
-}
-
-func DeleteSize(w http.ResponseWriter, r *http.Request) {
-	sizeID := r.URL.Query().Get("size_id")
-	for i, size := range sizes {
-		if fmt.Sprint(size.Size_ID) == sizeID {
-			sizes = append(sizes[:i], sizes[i+1:]...)
-			break
-		}
-	}
-	json.NewEncoder(w).Encode(sizes)
+	c.JSON(http.StatusOK, sizes)
 }

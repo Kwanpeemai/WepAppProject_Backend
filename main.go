@@ -4,61 +4,38 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"net/http"
 	"time"
 	"web-project/controller"
 
+	"github.com/gin-gonic/gin"
 	_ "github.com/go-sql-driver/mysql"
 )
 
 var Db *sql.DB
 
-func SetupDB() {
-	Db, _ = sql.Open("mysql", "root:kwanpeemai0101@tcp(127.0.0.1:3306)/YogurtShop")
+func SetupDB() *sql.DB {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", "root", "kwanpeemai0101", "127.0.0.1", "3306", "YogurtShop")
+	Db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatalf("Error connecting to database: %v", err)
+	}
 
-	fmt.Println(Db)
+	fmt.Println("Successfully connected to database!")
+
 	Db.SetConnMaxLifetime(time.Minute * 3)
 	Db.SetMaxOpenConns(10)
 	Db.SetMaxIdleConns(10)
+
+	return Db
 }
 
 func main() {
 	SetupDB()
-	// http.HandleFunc("/orders", controller.GetOrders)
-	// http.HandleFunc("/order", controller.GetOrder)
-	// http.HandleFunc("/createOrder", controller.CreateOrder)
-	// http.HandleFunc("/updateOrder", controller.UpdateOrder)
-	// http.HandleFunc("/deleteOrder", controller.DeleteOrder)
 
-	http.HandleFunc("/sizes", controller.GetSizes)
-	http.HandleFunc("/size", controller.GetSize)
-	http.HandleFunc("/createSize", controller.CreateSize)
-	http.HandleFunc("/updateSize", controller.UpdateSize)
-	http.HandleFunc("/deleteSize", controller.DeleteSize)
+	r := gin.Default()
 
-	// http.HandleFunc("/flavors", controller.GetFlavors)
-	// http.HandleFunc("/flavor", controller.GetFlavor)
-	// http.HandleFunc("/createFlavor", controller.CreateFlavor)
-	// http.HandleFunc("/updateFlavor", controller.UpdateFlavor)
-	// http.HandleFunc("/deleteFlavor", controller.DeleteFlavor)
+	r.POST("/createSize", func(c *gin.Context) { controller.CreateSize(c, Db) })
+	r.GET("/getSizes", func(c *gin.Context) { controller.GetSizes(c, Db) })
 
-	// http.HandleFunc("/toppings", controller.GetToppings)
-	// http.HandleFunc("/topping", controller.GetTopping)
-	// http.HandleFunc("/createTopping", controller.CreateTopping)
-	// http.HandleFunc("/updateTopping", controller.UpdateTopping)
-	// http.HandleFunc("/deleteTopping", controller.DeleteTopping)
-
-	// http.HandleFunc("/sauces", controller.GetSauces)
-	// http.HandleFunc("/sauce", controller.GetSauce)
-	// http.HandleFunc("/createSauce", controller.CreateSauce)
-	// http.HandleFunc("/updateSauce", controller.UpdateSauce)
-	// http.HandleFunc("/deleteSauce", controller.DeleteSauce)
-
-	http.HandleFunc("/payments", controller.GetPayments)
-	http.HandleFunc("/payment", controller.GetPayment)
-	http.HandleFunc("/createPayment", controller.CreatePayment)
-	http.HandleFunc("/updatePayment", controller.UpdatePayment)
-	http.HandleFunc("/deletePayment", controller.DeletePayment)
-
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	r.Run(":8080")
 }

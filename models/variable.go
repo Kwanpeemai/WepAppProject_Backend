@@ -37,10 +37,10 @@ type Sauce struct {
 }
 
 type Order_detail struct {
-	Order_id   int `json:"detail_id"`
+	Order_id   int `json:"order_id"`
 	Size_name_en string `json:"size_name_en"`
 	Flavor_name_en string `json:"flavor_name_en"`
-	Topping_name_en string `json:"tp_name_en"`
+	Topping_name_en []string `json:"tp_name_en"`
 	Sauce_name_en string `json:"sauce_name_en"`
 	Sum_Price      int `json:"price"`
 }

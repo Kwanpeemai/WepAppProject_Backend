@@ -35,8 +35,43 @@ func CreateOrderDetail_en(c *gin.Context, db *sql.DB) {
 		return
 	}
 
+	// ลดสต็อกของไซส์
+	_, err = db.Exec("UPDATE size SET Size_Stock = Size_Stock - 1 WHERE Size_name_en = ?", orderDetail_en.Size_name_en)
+	if err != nil {
+		log.Printf("Error updating size stock: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating size stock"})
+		return
+	}
+
+	// ลดสต็อกของรส
+	_, err = db.Exec("UPDATE flavor SET Flavor_Stock = Flavor_Stock - 1 WHERE Flavor_name_en = ?", orderDetail_en.Flavor_name_en)
+	if err != nil {
+		log.Printf("Error updating flavor stock: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating flavor stock"})
+		return
+	}
+
+	// ลดสต็อกของท็อปปิ้ง
+	for _, t := range orderDetail_en.Topping_name_en {
+		_, err = db.Exec("UPDATE topping SET Topping_Stock = Topping_Stock - 1 WHERE Topping_name_en = ?", t)
+		if err != nil {
+			log.Printf("Error updating topping stock: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating topping stock"})
+			return
+		}
+	}
+
+	// ลดสต็อกของซอส
+	_, err = db.Exec("UPDATE sauce SET Sauce_Stock = Sauce_Stock - 1 WHERE Sauce_name_en = ?", orderDetail_en.Sauce_name_en)
+	if err != nil {
+		log.Printf("Error updating sauce stock: %v", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating sauce stock"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"message": "Order detail created successfully"})
 }
+
 
 func GetOrderDetail_en(c *gin.Context, db *sql.DB) {
 	detailID := c.Param("id")

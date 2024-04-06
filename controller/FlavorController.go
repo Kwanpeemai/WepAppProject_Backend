@@ -78,7 +78,7 @@ func GetFlavors(c *gin.Context, db *sql.DB) {
 		flavors = append(flavors, flavor)
 	}
 
-	c.JSON(http.StatusOK, sizes)
+	c.JSON(http.StatusOK, flavors)
 }
 
 func GetFlavor(c *gin.Context, db *sql.DB) {

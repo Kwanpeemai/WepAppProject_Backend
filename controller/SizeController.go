@@ -9,7 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 ) 
 
-var sizes []models.Size
+// var sizes []models.Size
 
 func CreateSize(c *gin.Context, db *sql.DB) {
 	var size models.Size

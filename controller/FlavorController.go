@@ -82,7 +82,7 @@ func GetFlavors(c *gin.Context, db *sql.DB) {
 }
 
 func GetFlavor(c *gin.Context, db *sql.DB) {
-	sizeID := c.Param("id")
+	flavorID := c.Param("id")
 
 	if db == nil {
 		log.Fatalf("DB connection is nil")
@@ -91,7 +91,7 @@ func GetFlavor(c *gin.Context, db *sql.DB) {
 	}
 
 	var flavor models.Flavor
-	err := db.QueryRow("SELECT * FROM flavor WHERE Flavor_ID = ?", sizeID).Scan(&flavor.Flavor_ID, &flavor.Flavor_name_th, &flavor.Flavor_name_en, &flavor.Flavor_price, &flavor.Flavor_Stock)
+	err := db.QueryRow("SELECT * FROM flavor WHERE Flavor_ID = ?", flavorID).Scan(&flavor.Flavor_ID, &flavor.Flavor_name_th, &flavor.Flavor_name_en, &flavor.Flavor_price, &flavor.Flavor_Stock)
 	if err != nil {
 		log.Printf("Error querying data: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error querying data"})

@@ -1,9 +1,5 @@
 package models
 
-import (
-	"time"
-)
-
 type Size struct {
 	Size_ID      int    `json:"size_id"`
 	Size_name_th string `json:"size_name_th"`
@@ -43,13 +39,4 @@ type Order_detail struct {
 	Topping_name_en []string `json:"tp_name_en"`
 	Sauce_name_en string `json:"sauce_name_en"`
 	Sum_Price      int `json:"price"`
-}
-
-type Payment struct {
-	Payment_id     int       `json:"pm_id"`
-	Payment_method string    `json:"pm_method"`
-	Payment_amount int       `json:"pm_amount"`
-	Order_id       int       `json:"id"`
-	Payment_date   time.Time `json:"payment_date"`
-	Payment_time   time.Time `json:"payment_time"`
 }

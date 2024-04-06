@@ -69,12 +69,5 @@ func main() {
 	r.PUT("/updateOrderDetail/:id", func(c *gin.Context) { controller.UpdateOrderDetail(c, Db) })
 	r.DELETE("/deleteOrderDetail/:id", func(c *gin.Context) { controller.DeleteOrderDetail(c, Db) })
 
-	//payment
-	r.POST("/createPayment", func(c *gin.Context) { controller.CreatePayment(c, Db) })
-	r.GET("/getPayments", func(c *gin.Context) { controller.GetPayments(c, Db) })
-	r.GET("/getPayment/:id", func(c *gin.Context) { controller.GetPayment(c, Db) })
-	r.PUT("/updatePayment/:id", func(c *gin.Context) { controller.UpdatePayment(c, Db) })
-	r.DELETE("/deletePayment/:id", func(c *gin.Context) { controller.DeletePayment(c, Db) })
-
 	r.Run(":8080")
 }

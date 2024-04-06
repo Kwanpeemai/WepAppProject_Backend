@@ -32,11 +32,22 @@ type Sauce struct {
 	Sauce_Stock   int    `json:"sauce_stock"`
 }
 
-type Order_detail struct {
-	Order_id   int `json:"order_id"`
-	Size_name_en string `json:"size_name_en"`
-	Flavor_name_en string `json:"flavor_name_en"`
+type Order_detail_en struct {
+	Order_id        int      `json:"order_id"`
+	Size_name_en    string   `json:"size_name_en"`
+	Flavor_name_en  string   `json:"flavor_name_en"`
 	Topping_name_en []string `json:"tp_name_en"`
-	Sauce_name_en string `json:"sauce_name_en"`
-	Sum_Price      int `json:"price"`
+	Sauce_name_en   string   `json:"sauce_name_en"`
+	Sum_Price       int      `json:"price"`
 }
+
+
+type Order_detail_th struct {
+	Order_id        int      `json:"order_id"`
+	Size_name_th    string   `json:"size_name_th"`
+	Flavor_name_th  string   `json:"flavor_name_th"`
+	Topping_name_th []string `json:"tp_name_th"`
+	Sauce_name_th   string   `json:"sauce_name_th"`
+	Sum_Price       int      `json:"price"`
+}
+

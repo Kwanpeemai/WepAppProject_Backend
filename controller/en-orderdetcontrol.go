@@ -9,9 +9,9 @@ import (
 
 	"github.com/gin-gonic/gin"
 )
-
-func CreateOrderDetail(c *gin.Context, db *sql.DB) {
-	var orderDetail models.Order_detail
+//version eng
+func CreateOrderDetail_en(c *gin.Context, db *sql.DB) {
+	var orderDetail_en models.Order_detail_en
 
 	if db == nil {
 		log.Fatalf("DB connection is nil")
@@ -19,16 +19,16 @@ func CreateOrderDetail(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	if err := c.ShouldBindJSON(&orderDetail); err != nil {
+	if err := c.ShouldBindJSON(&orderDetail_en); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	// แปลง array ของ topping เป็นสตริงที่แยกด้วย comma
-	toppings := strings.Join(orderDetail.Topping_name_en, ",")
+	toppings := strings.Join(orderDetail_en.Topping_name_en, ",")
 
 	insertQuery := "INSERT INTO order_detail (Order_id, Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en) VALUES (?, ?, ?, ?, ?)"
-	_, err := db.Exec(insertQuery, orderDetail.Order_id, orderDetail.Size_name_en, orderDetail.Flavor_name_en, toppings, orderDetail.Sauce_name_en)
+	_, err := db.Exec(insertQuery, orderDetail_en.Order_id, orderDetail_en.Size_name_en, orderDetail_en.Flavor_name_en, toppings, orderDetail_en.Sauce_name_en)
 	if err != nil {
 		log.Printf("Error executing query: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting data"})
@@ -38,7 +38,7 @@ func CreateOrderDetail(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Order detail created successfully"})
 }
 
-func GetOrderDetail(c *gin.Context, db *sql.DB) {
+func GetOrderDetail_en(c *gin.Context, db *sql.DB) {
 	detailID := c.Param("id")
 
 	if db == nil {
@@ -47,7 +47,7 @@ func GetOrderDetail(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	var orderDetail models.Order_detail
+	var orderDetail models.Order_detail_en
 	var toppings string
 	err := db.QueryRow("SELECT Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en FROM order_detail WHERE Order_id = ?", detailID).Scan(&orderDetail.Size_name_en, &orderDetail.Flavor_name_en, &toppings, &orderDetail.Sauce_name_en)
 	if err != nil {
@@ -59,7 +59,7 @@ func GetOrderDetail(c *gin.Context, db *sql.DB) {
 	toppingSlice := strings.Split(toppings, ",")
 
 	// คำนวณราคารวม
-	totalPrice, err := calculateTotalPrice(db, orderDetail.Size_name_en, orderDetail.Flavor_name_en, toppingSlice, orderDetail.Sauce_name_en)
+	totalPrice, err := calculateTotalPrice_en(db, orderDetail.Size_name_en, orderDetail.Flavor_name_en, toppingSlice, orderDetail.Sauce_name_en)
 	if err != nil {
 		log.Printf("Error calculating total price: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error calculating total price"})
@@ -81,7 +81,7 @@ func GetOrderDetail(c *gin.Context, db *sql.DB) {
 }
 
 // sumprice
-func calculateTotalPrice(db *sql.DB, size, flavor string, toppings []string, sauce string) (int, error) {
+func calculateTotalPrice_en(db *sql.DB, size, flavor string, toppings []string, sauce string) (int, error) {
 	var sizePrice, flavorPrice, saucePrice int
 	var toppingPrice int = 0
 
@@ -117,7 +117,7 @@ func calculateTotalPrice(db *sql.DB, size, flavor string, toppings []string, sau
 	return totalPrice, nil
 }
 
-func GetOrderDetails(c *gin.Context, db *sql.DB) {
+func GetOrderDetails_en(c *gin.Context, db *sql.DB) {
 	if db == nil {
 		log.Fatalf("DB connection is nil")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
@@ -131,9 +131,9 @@ func GetOrderDetails(c *gin.Context, db *sql.DB) {
 	}
 	defer rows.Close()
 
-	var orderDetails []models.Order_detail
+	var orderDetails []models.Order_detail_en
 	for rows.Next() {
-		var orderDetail models.Order_detail
+		var orderDetail models.Order_detail_en
 		err := rows.Scan(&orderDetail.Order_id, &orderDetail.Size_name_en, &orderDetail.Flavor_name_en, &orderDetail.Topping_name_en, &orderDetail.Sauce_name_en, &orderDetail.Sum_Price)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning data"})
@@ -145,14 +145,14 @@ func GetOrderDetails(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, orderDetails)
 }
 
-func UpdateOrderDetail(c *gin.Context, db *sql.DB) {
+func UpdateOrderDetail_en(c *gin.Context, db *sql.DB) {
 	id := c.Param("id")
 	if id == "" {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "ID is required"})
 		return
 	}
 
-	var orderDetail models.Order_detail
+	var orderDetail models.Order_detail_en
 
 	if err := c.ShouldBindJSON(&orderDetail); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -171,7 +171,7 @@ func UpdateOrderDetail(c *gin.Context, db *sql.DB) {
 	c.JSON(http.StatusOK, gin.H{"message": "Order detail updated successfully"})
 }
 
-func DeleteOrderDetail(c *gin.Context, db *sql.DB) {
+func DeleteOrderDetail_en(c *gin.Context, db *sql.DB) {
 	detailID := c.Param("id")
 
 	if db == nil {
@@ -190,3 +190,4 @@ func DeleteOrderDetail(c *gin.Context, db *sql.DB) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Order detail deleted successfully"})
 }
+

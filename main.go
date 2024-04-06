@@ -62,12 +62,19 @@ func main() {
 	r.PUT("/updateSauce/:id", func(c *gin.Context) { controller.UpdateSauce(c, Db) })
 	r.DELETE("/deleteSauce/:id", func(c *gin.Context) { controller.DeleteSauce(c, Db) })
 
-	//orderdetail
-	r.POST("/createOrderDetail", func(c *gin.Context) { controller.CreateOrderDetail(c, Db) })
-	r.GET("/getOrderDetails", func(c *gin.Context) { controller.GetOrderDetails(c, Db) })
-	r.GET("/getOrderDetail/:id", func(c *gin.Context) { controller.GetOrderDetail(c, Db) })
-	r.PUT("/updateOrderDetail/:id", func(c *gin.Context) { controller.UpdateOrderDetail(c, Db) })
-	r.DELETE("/deleteOrderDetail/:id", func(c *gin.Context) { controller.DeleteOrderDetail(c, Db) })
+	//orderdetail_en
+	r.POST("/createOrderDetail-en", func(c *gin.Context) { controller.CreateOrderDetail_en(c, Db) })
+	r.GET("/getOrderDetails-en", func(c *gin.Context) { controller.GetOrderDetails_en(c, Db) })
+	r.GET("/getOrderDetail-en/:id", func(c *gin.Context) { controller.GetOrderDetail_en(c, Db) })
+	r.PUT("/updateOrderDetail-en/:id", func(c *gin.Context) { controller.UpdateOrderDetail_en(c, Db) })
+	r.DELETE("/deleteOrderDetail-en/:id", func(c *gin.Context) { controller.DeleteOrderDetail_en(c, Db) })
+
+	//orderdetail_th
+	r.POST("/createOrderDetail-th", func(c *gin.Context) { controller.CreateOrderDetail_th(c, Db) })
+	r.GET("/getOrderDetails-th", func(c *gin.Context) { controller.GetOrderDetails_th(c, Db) })
+	r.GET("/getOrderDetail-th/:id", func(c *gin.Context) { controller.GetOrderDetail_th(c, Db) })
+	r.PUT("/updateOrderDetail-th/:id", func(c *gin.Context) { controller.UpdateOrderDetail_th(c, Db) })
+	r.DELETE("/deleteOrderDetail-th/:id", func(c *gin.Context) { controller.DeleteOrderDetail_th(c, Db) })
 
 	r.Run(":8080")
 }

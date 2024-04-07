@@ -39,7 +39,7 @@ func main() {
 	r.GET("/getSizes", func(c *gin.Context) { controller.GetSizes(c, Db) })
 	r.GET("/getSize/:id", func(c *gin.Context) { controller.GetSize(c, Db) })
 	r.PUT("/updateSize/:id", func(c *gin.Context) { controller.UpdateSize(c, Db) })
-	r.DELETE("/deleteSize/:id", func(c *gin.Context) { controller.DeleteSize(c, Db) })
+	r.DELETE("/deleteSize/:id", func(c *gin.Context) { controller.DeleteSize(c, Db)})
 
 	//Flavor
 	r.POST("/createFlavor", func(c *gin.Context) { controller.CreateFlavor(c, Db) })

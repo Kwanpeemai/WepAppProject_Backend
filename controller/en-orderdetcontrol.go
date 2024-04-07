@@ -83,7 +83,9 @@ func GetOrderDetail_en(c *gin.Context, db *sql.DB) {
 	}
 
 	var orderDetail models.Order_detail_en
-	var toppings string
+	// var toppings string
+	toppings := strings.Join(orderDetail.Topping_name_en, ",")
+
 	err := db.QueryRow("SELECT Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en FROM order_detail WHERE Order_id = ?", detailID).Scan(&orderDetail.Size_name_en, &orderDetail.Flavor_name_en, &toppings, &orderDetail.Sauce_name_en)
 	if err != nil {
 		log.Printf("Error querying data: %v", err)

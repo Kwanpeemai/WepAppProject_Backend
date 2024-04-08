@@ -2,14 +2,14 @@ package controller
 
 import (
 	"database/sql"
+	"encoding/base64"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"web-project/models"
 
 	"github.com/gin-gonic/gin"
-) 
-
-// var sizes []models.Size
+)
 
 func CreateSize(c *gin.Context, db *sql.DB) {
 	var size models.Size
@@ -25,9 +25,25 @@ func CreateSize(c *gin.Context, db *sql.DB) {
 		return
 	}
 
+	// Handle image upload
+	file, _, err := c.Request.FormFile("size_image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Image is required"})
+		return
+	}
+	defer file.Close()
+
+	imageBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Encode image to base64
+	imageBase64 := base64.StdEncoding.EncodeToString(imageBytes)
+
 	// Insert into database
-	insertQuery := "INSERT INTO size (Size_name_th, Size_name_en, Size_price, Size_Stock) VALUES (?, ?, ?, ?)"
-	_, err := db.Exec(insertQuery, size.Size_name_th, size.Size_name_en, size.Size_price, size.Size_Stock)
+	insertQuery := "INSERT INTO size (Size_name_th, Size_name_en, Size_price, Size_Stock, Size_image) VALUES (?, ?, ?, ?, ?)"
+	_, err = db.Exec(insertQuery, size.Size_name_th, size.Size_name_en, size.Size_price, size.Size_Stock, imageBase64)
 	if err != nil {
 		log.Printf("Error executing query: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting data"})
@@ -36,6 +52,8 @@ func CreateSize(c *gin.Context, db *sql.DB) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Size created successfully"})
 }
+
+
 
 func GetSizes(c *gin.Context, db *sql.DB) {
 	if db == nil {
@@ -85,7 +103,6 @@ func GetSize(c *gin.Context, db *sql.DB) {
 
 	c.JSON(http.StatusOK, size)
 }
-
 func UpdateSize(c *gin.Context, db *sql.DB) {
 	id := c.Param("id")
 	if id == "" {
@@ -100,9 +117,25 @@ func UpdateSize(c *gin.Context, db *sql.DB) {
 		return
 	}
 
+	// Handle image upload
+	file, _, err := c.Request.FormFile("size_image")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Image is required"})
+		return
+	}
+	defer file.Close()
+
+	imageBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Encode image to base64
+	imageBase64 := base64.StdEncoding.EncodeToString(imageBytes)
+
 	// Update database
-	updateQuery := "UPDATE size SET Size_name_th=?, Size_name_en=?, Size_price=?, Size_Stock=? WHERE Size_ID=?"
-	_, err := db.Exec(updateQuery, size.Size_name_th, size.Size_name_en, size.Size_price, size.Size_Stock, id)
+	updateQuery := "UPDATE size SET Size_name_th=?, Size_name_en=?, Size_price=?, Size_Stock=?, Size_image=? WHERE Size_ID=?"
+	_, err = db.Exec(updateQuery, size.Size_name_th, size.Size_name_en, size.Size_price, size.Size_Stock, imageBase64, id)
 	if err != nil {
 		log.Printf("Error executing query: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating data"})
@@ -111,6 +144,7 @@ func UpdateSize(c *gin.Context, db *sql.DB) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Size updated successfully"})
 }
+
 
 func DeleteSize(c *gin.Context, db *sql.DB) {
 	sizeID := c.Param("id")

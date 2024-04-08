@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>Add Products</title>
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="/html/css/style.css">
+</head>
+
+<body>
+   <header class="header">
+      <div class="flex">
+         <a href="#" class="logo">HAVE A CUP DAY</a>
+         <nav class="navbar">
+            <a href="admin.php">add products</a>
+            <a href="products.php">view products</a>
+         </nav>
+   </header>
+   <div class="container">
+      <section>
+         <form action="" method="post" class="add-product-form" enctype="multipart/form-data">
+            <h3>add a new product</h3>
+            <p>Product Name</p>
+            <input type="text" name="p_name" placeholder="enter the product name" class="box" required>
+            <p>Product Price</p>
+            <input type="number" name="p_price" min="0" placeholder="enter the product price" class="box" required>
+            <p>Product Quantity</p>
+            <input type="number" name="p_quantity" min="0" placeholder="enter the product quantity" class="box"
+               required>
+            <p>Product Image</p>
+            <input type="file" name="p_image" accept="image/png, image/jpg, image/jpeg" class="box" required>
+            <input type="submit" value="add the product" name="add_product" class="btn">
+         </form>
+      </section>
+      <section class="display-product-table">
+         <table>
+            <thead>
+               <th>product image</th>
+               <th>product name</th>
+               <th>product price</th>
+               <th>action</th>
+            </thead>
+            <tbody>
+               <tr>
+                  <td>รูปจ้า</td>
+                  <td>ชื่อจ้า</td>
+                  <td>ราคาจ้า</td>
+                  <td>
+                     <button class="btn delete-btn">delete</button>
+                     <button class="btn option-btn">update</button>
+                  </td>
+               </tr>
+            </tbody>
+         </table>
+      </section>
+      <section class="edit-form-container">
+
+         <!-- <?php
+   
+   if(isset($_GET['edit'])){
+      $edit_id = $_GET['edit'];
+      $edit_query = mysqli_query($conn, "SELECT * FROM `products` WHERE id = $edit_id");
+      if(mysqli_num_rows($edit_query) > 0){
+         while($fetch_edit = mysqli_fetch_assoc($edit_query)){
+   ?> -->
+
+         <!-- <form action="" method="post" enctype="multipart/form-data">
+      <img src="uploaded_img/<?php echo $fetch_edit['image']; ?>" height="200" alt="">
+      <input type="hidden" name="update_p_id" value="<?php echo $fetch_edit['id']; ?>">
+      <input type="text" class="box" required name="update_p_name" value="<?php echo $fetch_edit['name']; ?>">
+      <input type="number" min="0" class="box" required name="update_p_price" value="<?php echo $fetch_edit['price']; ?>">
+      <input type="file" class="box" required name="update_p_image" accept="image/png, image/jpg, image/jpeg">
+      <input type="submit" value="update the prodcut" name="update_product" class="btn">
+      <input type="reset" value="cancel" id="close-edit" class="option-btn">
+   </form> -->
+
+         <!-- <?php
+            };
+         };
+         echo "<script>document.querySelector('.edit-form-container').style.display = 'flex';</script>";
+      };
+   ?> -->
+
+      </section>
+   </div>
+   <!-- custom js file link  -->
+   <!-- <script src="js/script.js"></script> -->
+</body>
+
+</html>

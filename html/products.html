@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+   <meta charset="UTF-8">
+   <meta http-equiv="X-UA-Compatible" content="IE=edge">
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <title>view products</title>
+   <!-- custom css file link  -->
+   <link rel="stylesheet" href="/html/css/style.css">
+</head>
+
+<body>
+   <header class="header">
+      <div class="flex">
+         <a href="#" class="logo">HAVE A CUP DAY</a>
+         <nav class="navbar">
+            <a href="admin.php">add products</a>
+            <a href="products.php">view products</a>
+         </nav>
+   </header>
+   <div class="container">
+      <section class="products">
+         <h1 class="heading">Products</h1>
+         <div class="box-container">
+            <form action="" method="post">
+               <div class="box">
+                  รูปจ้า
+                  <img src="uploaded_img/<?php echo $fetch_product['image']; ?>" alt="">
+                  <h3>ชื่อจ้า</h3>
+                  <div class="price">ราคาจ้า</div>
+               </div>
+            </form>
+         </div>
+      </section>
+   </div>
+</body>
+
+</html>

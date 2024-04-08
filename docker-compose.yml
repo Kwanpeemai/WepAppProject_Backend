@@ -12,6 +12,7 @@ services:
     volumes:
       - mysql_data:/var/lib/mysql
 
+
   adminer:
     image: adminer
     restart: always
@@ -20,3 +21,4 @@ services:
 
 volumes:
   mysql_data:
+

@@ -2,6 +2,7 @@ package models
 
 type Size struct {
 	Size_ID      int    `json:"size_id"`
+	Size_image   string `json:"size_imge"`
 	Size_name_th string `json:"size_name_th"`
 	Size_name_en string `json:"size_name_en"`
 	Size_price   int    `json:"size_price"`
@@ -41,7 +42,6 @@ type Order_detail_en struct {
 	Sum_Price       int      `json:"price"`
 }
 
-
 type Order_detail_th struct {
 	Order_id        int      `json:"order_id"`
 	Size_name_th    string   `json:"size_name_th"`
@@ -50,4 +50,3 @@ type Order_detail_th struct {
 	Sauce_name_th   string   `json:"sauce_name_th"`
 	Sum_Price       int      `json:"price"`
 }
-

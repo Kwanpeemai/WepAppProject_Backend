@@ -2,8 +2,6 @@ package controller
 
 import (
 	"database/sql"
-	"encoding/base64"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"web-project/models"
@@ -37,7 +35,7 @@ func CreateSize(c *gin.Context, db *sql.DB) {
 	var errors []error
 
 	for _, size := range sizes.Sizes {
-		insertQuery := "INSERT INTO flavor (Size_name_th, Size_name_en, Size_price, Size_Stock) VALUES (?, ?, ?, ?)"
+		insertQuery := "INSERT INTO size (Size_name_th, Size_name_en, Size_price, Size_Stock) VALUES (?, ?, ?, ?)"
 		_, err := db.Exec(insertQuery, size.Size_name_th, size.Size_name_en, size.Size_price, size.Size_Stock)
 		if err != nil {
 			log.Printf("Error executing query: %v", err)
@@ -50,7 +48,7 @@ func CreateSize(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Flavors created successfully"})
+	c.JSON(http.StatusOK, gin.H{"message": "Size created successfully"})
 }
 
 
@@ -103,6 +101,7 @@ func GetSize(c *gin.Context, db *sql.DB) {
 
 	c.JSON(http.StatusOK, size)
 }
+
 func UpdateSize(c *gin.Context, db *sql.DB) {
 	id := c.Param("id")
 	if id == "" {
@@ -117,25 +116,8 @@ func UpdateSize(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	// Handle image upload
-	file, _, err := c.Request.FormFile("size_image")
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Image is required"})
-		return
-	}
-	defer file.Close()
-
-	imageBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// Encode image to base64
-	imageBase64 := base64.StdEncoding.EncodeToString(imageBytes)
-
-	// Update database
-	updateQuery := "UPDATE size SET Size_name_th=?, Size_name_en=?, Size_price=?, Size_Stock=?, Size_image=? WHERE Size_ID=?"
-	_, err = db.Exec(updateQuery, size.Size_name_th, size.Size_name_en, size.Size_price, size.Size_Stock, imageBase64, id)
+	updateQuery := "UPDATE size SET Size_name_th=?, Size_name_en=?, Size_price=?, Size_Stock=? WHERE Size_ID=?"
+	_, err := db.Exec(updateQuery, size.Size_name_th, size.Size_name_en, size.Size_price, size.Size_Stock, id)
 	if err != nil {
 		log.Printf("Error executing query: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating data"})

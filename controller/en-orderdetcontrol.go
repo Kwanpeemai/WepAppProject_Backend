@@ -25,15 +25,29 @@ func CreateOrderDetail_en(c *gin.Context, db *sql.DB) {
 	}
 
 	// แปลง array ของ topping เป็นสตริงที่แยกด้วย comma
-	toppings := strings.Join(orderDetail_en.Topping_name_en, ",")
+	toppings := strings.Join(orderDetail_en.Topping_name_en, "")
+	
+	insertQuery := "INSERT INTO order_detail (Order_id, Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en, sum_Price) VALUES (?, ?, ?, ?, ?, ?)"
+result, err := db.Exec(insertQuery, orderDetail_en.Order_id, orderDetail_en.Size_name_en, orderDetail_en.Flavor_name_en, toppings, orderDetail_en.Sauce_name_en, orderDetail_en.Sum_Price)
+if err != nil {
+    log.Printf("Error executing query: %v", err)
+    c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting data"})
+    return
+}
 
-	insertQuery := "INSERT INTO order_detail (Order_id, Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en,sum_Price) VALUES (?, ?, ?, ?, ?,?)"
-	_, err := db.Exec(insertQuery, orderDetail_en.Order_id, orderDetail_en.Size_name_en, orderDetail_en.Flavor_name_en, toppings, orderDetail_en.Sauce_name_en,orderDetail_en.Sum_Price)
-	if err != nil {
-		log.Printf("Error executing query: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting data"})
-		return
-	}
+lastInsertId, err := result.LastInsertId()
+if err != nil {
+    log.Printf("Error getting last insert ID: %v", err)
+    c.JSON(http.StatusInternalServerError, gin.H{"error": "Error getting last insert ID"})
+    return
+}
+
+c.JSON(http.StatusOK, gin.H{
+    "Order_id": lastInsertId,
+    "message":  "Data inserted successfully",
+})
+
+
 
 	// ลดสต็อกของไซส์
 	_, err = db.Exec("UPDATE size SET Size_Stock = Size_Stock - 1 WHERE Size_name_en = ?", orderDetail_en.Size_name_en)
@@ -73,6 +87,29 @@ func CreateOrderDetail_en(c *gin.Context, db *sql.DB) {
 }
 
 
+// func GetOrderDetail_en(c *gin.Context, db *sql.DB) {
+// 	detailID := c.Param("id")
+
+// 	if db == nil {
+// 		log.Fatalf("DB connection is nil")
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+// 		return
+// 	}
+
+// 	var orderDetail models.Order_detail_en
+// 	// var toppings string
+// 	toppings := strings.Join(orderDetail.Topping_name_en, ",")
+
+// 	err := db.QueryRow("SELECT Size_id,Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en FROM order_detail WHERE Order_id = ?", detailID).Scan(&orderDetail.Size_name_en, &orderDetail.Flavor_name_en, &toppings, &orderDetail.Sauce_name_en)
+// 	if err != nil {
+// 		log.Printf("Error querying data: %v", err)
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error querying data"})
+// 		return
+// 	}	
+
+// 	c.JSON(http.StatusOK, orderDetail)
+// }
+
 func GetOrderDetail_en(c *gin.Context, db *sql.DB) {
 	detailID := c.Param("id")
 
@@ -83,17 +120,22 @@ func GetOrderDetail_en(c *gin.Context, db *sql.DB) {
 	}
 
 	var orderDetail models.Order_detail_en
-	// var toppings string
-	toppings := strings.Join(orderDetail.Topping_name_en, ",")
-
-	err := db.QueryRow("SELECT Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en FROM order_detail WHERE Order_id = ?", detailID).Scan(&orderDetail.Size_name_en, &orderDetail.Flavor_name_en, &toppings, &orderDetail.Sauce_name_en)
+	var toppings string
+	
+	err := db.QueryRow("SELECT Order_id, Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en FROM order_detail WHERE Order_id = ?", detailID).Scan(&orderDetail.Order_id, &orderDetail.Size_name_en, &orderDetail.Flavor_name_en, &toppings, &orderDetail.Sauce_name_en)
 	if err != nil {
 		log.Printf("Error querying data: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error querying data"})
 		return
 	}	
 
-	c.JSON(http.StatusOK, orderDetail)
+	c.JSON(http.StatusOK, gin.H{
+		"Order_id":        orderDetail.Order_id,
+		"Size_name_en":    orderDetail.Size_name_en,
+		"Flavor_name_en":  orderDetail.Flavor_name_en,
+		"Topping_name_en": strings.Split(toppings, ","),
+		"Sauce_name_en":   orderDetail.Sauce_name_en,
+	})
 }
 
 
@@ -104,8 +146,9 @@ func GetOrderDetails_en(c *gin.Context, db *sql.DB) {
 		return
 	}
 
-	rows, err := db.Query("SELECT * FROM order_detail")
+	rows, err := db.Query("SELECT Order_id, Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en, sum_Price FROM order_detail")
 	if err != nil {
+		log.Printf("Error querying data: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error querying data"})
 		return
 	}
@@ -114,16 +157,20 @@ func GetOrderDetails_en(c *gin.Context, db *sql.DB) {
 	var orderDetails []models.Order_detail_en
 	for rows.Next() {
 		var orderDetail models.Order_detail_en
-		err := rows.Scan(&orderDetail.Order_id, &orderDetail.Size_name_en, &orderDetail.Flavor_name_en, &orderDetail.Topping_name_en, &orderDetail.Sauce_name_en, &orderDetail.Sum_Price)
+		var toppings string
+		err := rows.Scan(&orderDetail.Order_id, &orderDetail.Size_name_en, &orderDetail.Flavor_name_en, &toppings, &orderDetail.Sauce_name_en, &orderDetail.Sum_Price)
 		if err != nil {
+			log.Printf("Error scanning data: %v", err)
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning data"})
 			return
 		}
+		orderDetail.Topping_name_en = strings.Split(toppings, ",")
 		orderDetails = append(orderDetails, orderDetail)
 	}
 
 	c.JSON(http.StatusOK, orderDetails)
 }
+
 
 func UpdateOrderDetail_en(c *gin.Context, db *sql.DB) {
 	id := c.Param("id")

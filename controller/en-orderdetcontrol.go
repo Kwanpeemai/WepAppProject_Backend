@@ -27,8 +27,8 @@ func CreateOrderDetail_en(c *gin.Context, db *sql.DB) {
 	// แปลง array ของ topping เป็นสตริงที่แยกด้วย comma
 	toppings := strings.Join(orderDetail_en.Topping_name_en, ",")
 
-	insertQuery := "INSERT INTO order_detail (Order_id, Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en) VALUES (?, ?, ?, ?, ?)"
-	_, err := db.Exec(insertQuery, orderDetail_en.Order_id, orderDetail_en.Size_name_en, orderDetail_en.Flavor_name_en, toppings, orderDetail_en.Sauce_name_en)
+	insertQuery := "INSERT INTO order_detail (Order_id, Size_name_en, Flavor_name_en, Topping_name_en, Sauce_name_en,sum_Price) VALUES (?, ?, ?, ?, ?,?)"
+	_, err := db.Exec(insertQuery, orderDetail_en.Order_id, orderDetail_en.Size_name_en, orderDetail_en.Flavor_name_en, toppings, orderDetail_en.Sauce_name_en,orderDetail_en.Sum_Price)
 	if err != nil {
 		log.Printf("Error executing query: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error inserting data"})
@@ -91,68 +91,11 @@ func GetOrderDetail_en(c *gin.Context, db *sql.DB) {
 		log.Printf("Error querying data: %v", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error querying data"})
 		return
-	}
-
-	toppingSlice := strings.Split(toppings, ",")
-
-	// คำนวณราคารวม
-	totalPrice, err := calculateTotalPrice_en(db, orderDetail.Size_name_en, orderDetail.Flavor_name_en, toppingSlice, orderDetail.Sauce_name_en)
-	if err != nil {
-		log.Printf("Error calculating total price: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error calculating total price"})
-		return
-	}
-
-	orderDetail.Sum_Price = totalPrice
-
-	// แทรกค่า Sum_Price กลับเข้าไปในตาราง
-	updateQuery := "UPDATE order_detail SET Sum_Price = ? WHERE Order_id = ?"
-	_, err = db.Exec(updateQuery, orderDetail.Sum_Price, detailID)
-	if err != nil {
-		log.Printf("Error updating Sum_Price: %v", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error updating Sum_Price"})
-		return
-	}
+	}	
 
 	c.JSON(http.StatusOK, orderDetail)
 }
 
-// sumprice
-func calculateTotalPrice_en(db *sql.DB, size, flavor string, toppings []string, sauce string) (int, error) {
-	var sizePrice, flavorPrice, saucePrice int
-	var toppingPrice int = 0
-
-	// ค้นหาราคาของแต่ละส่วน
-	err := db.QueryRow("SELECT Size_price FROM size WHERE Size_name_en = ?", size).Scan(&sizePrice)
-	if err != nil {
-		return 0, err
-	}
-
-	err = db.QueryRow("SELECT Flavor_price FROM flavor WHERE Flavor_name_en = ?", flavor).Scan(&flavorPrice)
-	if err != nil {
-		return 0, err
-	}
-
-	err = db.QueryRow("SELECT Sauce_price FROM sauce WHERE Sauce_name_en = ?", sauce).Scan(&saucePrice)
-	if err != nil {
-		return 0, err
-	}
-
-	// คำนวณราคาของ topping
-	for _, t := range toppings {
-		var price int
-		err = db.QueryRow("SELECT Topping_price FROM topping WHERE Topping_name_en = ?", t).Scan(&price)
-		if err != nil {
-			return 0, err
-		}
-		toppingPrice += price
-	}
-
-	// คำนวณราคารวม
-	totalPrice := sizePrice + flavorPrice + toppingPrice + saucePrice
-
-	return totalPrice, nil
-}
 
 func GetOrderDetails_en(c *gin.Context, db *sql.DB) {
 	if db == nil {

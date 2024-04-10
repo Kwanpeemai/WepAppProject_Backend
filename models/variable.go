@@ -1,8 +1,8 @@
 package models
 
+
 type Size struct {
 	Size_ID      int    `json:"size_id"`
-	Size_image   string `json:"size_imge"`
 	Size_name_th string `json:"size_name_th"`
 	Size_name_en string `json:"size_name_en"`
 	Size_price   int    `json:"size_price"`

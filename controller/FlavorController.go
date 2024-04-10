@@ -13,8 +13,6 @@ type Flavors struct {
 	Flavors []models.Flavor `json:"flavors"`
 }
 
-var flavors []models.Flavor
-
 func CreateFlavor(c *gin.Context, db *sql.DB) {
 	var flavors Flavors
 
@@ -66,11 +64,13 @@ func GetFlavors(c *gin.Context, db *sql.DB) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error querying data"})
 		return
 	}
+
 	defer rows.Close()
 
+	var flavors []models.Flavor
 	var flavor models.Flavor
 	for rows.Next() {
-		err := rows.Scan(&flavor.Flavor_ID, &flavor.Flavor_name_th, &flavor.Flavor_name_en, &flavor.Flavor_price, &flavor.Flavor_Stock)
+		err := rows.Scan(&flavor.Flavor_ID,&flavor.Flavor_name_th, &flavor.Flavor_name_en, &flavor.Flavor_price, &flavor.Flavor_Stock)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error scanning data"})
 			return
@@ -145,4 +145,3 @@ func DeleteFlavor(c *gin.Context, db *sql.DB) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Flavor deleted successfully"})
 }
-
